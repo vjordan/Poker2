@@ -15,26 +15,26 @@ import cartes.ValeurCarte;
 public class Table {
 
 	/**Cet attribut indique si la partie a commencé ou non*/
-	protected boolean isStarted;
+	public boolean isStarted;
 	/**Cet attribut contient la listedes joueurs encore présents autour de la table*/
-	protected ArrayList<Joueur> joueurs;
+	public ArrayList<Joueur> joueurs;
 	/**Cet attribut contient le paquet de cartes*/
-	protected ArrayList<Carte> cartes;
+	public ArrayList<Carte> cartes;
 	/**Cet attribut contient le dealer actuel pour cette table*/
-	protected Joueur currentDealer;
+	public Joueur currentDealer;
 	/**Cet attribut contient le montant de la mise actuelle (pas la pot)*/
-	protected int currentMise;
+	public int currentMise;
 	/**Cet attribut contient le montant de la blind*/
-	protected int currentBlind;
+	public int currentBlind;
 	/**Cet attribut contient le montant du pot qui sera reversé au gagnant*/
-	protected int pot;
+	public int pot;
 	
 	/**Cet attribut contient la carte retournée au turn*/
-	private Carte turn;
+	public Carte turn;
 	/**Cet attribut contient la carte retournée au river*/
-	private Carte river;
+	public Carte river;
 	/**Cet attribut contient les trois cartes retournées au flop*/
-	private Carte[] flop;
+	public Carte[] flop;
 	
 	/**
 	 * Constructeur
@@ -62,20 +62,20 @@ public class Table {
 	 * Cette méthode permet de passer la table au statut "partie commence".
 	 * On ne peut plus ajouter de joueurs à la table et un dealer est désigné pour commencer
 	 */
-	public void start(){
-		StringBuilder presentation = new StringBuilder("Les joueurs ");
+	public String start(){
+		StringBuilder presentation = new StringBuilder("joueurs::Les joueurs ");
 		for(Joueur j : joueurs)
 			presentation.append(j.getName() + ", ");
 		presentation.append("sont autour de la table");
-		System.out.println(presentation);
-		
 		isStarted = true;
+		
+		return presentation.toString();
 	}
 	
 	/**
 	 * Cette méthode effectue un mélange des cartes
 	 */
-	protected void melanger(){
+	public void melanger(){
 		Collections.shuffle(cartes);
 	}
 	
@@ -115,29 +115,28 @@ public class Table {
 	/**
 	 * Cette méthode change le dealer (dealer suivant, méthode à appeler en fin de tour)
 	 */
-	protected void updateDealer(){
+	public String updateDealer(){
 		if(currentDealer == null){
 			int dealerPos = (int)Math.random()*joueurs.size();
 			currentDealer = joueurs.get(dealerPos);
 			currentDealer.setDealer(true);
-			
-			System.out.println(currentDealer.getName() + " commence en tant que dealer");
 		}else{
 			int indexOldDealer = joueurs.indexOf(currentDealer);
 			int indexNewDealer = indexOldDealer + 1;
 			if(indexNewDealer >= joueurs.size())
-				indexNewDealer = 0;
-			
+				indexNewDealer = 0;		
 			currentDealer.setDealer(false);
 			currentDealer = joueurs.get(indexNewDealer);
 			currentDealer.setDealer(true);
 		}
+		
+		return "dealer::" + currentDealer.getName() + " commence en tant que dealer";
 	}
 	
 	/**
 	 * Cette méthode effectue les blinds
 	 */
-	protected void blinds(){
+	public String blinds(){
 		int indexDealer = joueurs.indexOf(currentDealer);
 
 		int petiteBlind = indexDealer + 1;
@@ -151,14 +150,17 @@ public class Table {
 		pot += joueurs.get(petiteBlind).miser(currentBlind);
 		pot += joueurs.get(grosseBlind).miser(currentBlind*2);
 
-		System.out.println(joueurs.get(petiteBlind).getName() + " dépose la petite blind d'un montant de " + currentBlind);
-		System.out.println(joueurs.get(grosseBlind).getName() + " dépose la grosse blind d'un montant de " + currentBlind*2);
+		StringBuilder sb = new StringBuilder("blinds::" + joueurs.get(petiteBlind).getName());
+		sb.append(" dépose la petite blind d'un montant de " + currentBlind);	
+		sb.append("\n" + joueurs.get(grosseBlind).getName() + " dépose la grosse blind d'un montant de " + currentBlind*2);
+		
+		return sb.toString();
 	}
 	
 	/**
 	 * Cette méthode distribue les cartes (2 par joueurs)
 	 */
-	protected void distribuer(){
+	public void distribuer(){
 		for(int i = 0; i < 2; i++){
 			int indexDealer = joueurs.indexOf(currentDealer);
 			int indexJoueurAdistribuer;
@@ -187,40 +189,40 @@ public class Table {
 	/**
 	 * Cette méthode gère le flop
 	 */
-	protected void flop(){
+	public String flop(){
 		cartes.remove(0); // on brule 1 carte
 		for(int i = 0; i < flop.length; i++){
 			flop[i] = prendreCarte();
 		}
-		System.out.println("\nLe flop vient de découvrir les cartes " + flop[0] + " ," + flop[1] + ", " + flop[2] + "\n");
+		return "flop::\nLe flop vient de découvrir les cartes " + flop[0] + " ," + flop[1] + ", " + flop[2] + "\n";
 	}
 	
 	/**
 	 * Cette méthode gère le turn
 	 */
-	protected void turn(){
+	public String turn(){
 		cartes.remove(0); // brule 1 carte
 		
 		this.turn = cartes.remove(0);
-		System.out.println("\nLe turn vient de découvrir la carte " + turn + "\n");
+		return "turn::\nLe turn vient de découvrir la carte " + turn + "\n";
 	}
 	
 	/**
 	 * Cette méthode gère le river
 	 */
-	protected void river(){
+	public String river(){
 		cartes.remove(0); // brule 1 carte
 		
 		this.river = cartes.remove(0);
 		
-		System.out.println("Le river vient de découvrir la carte " + river + "\n");
+		return "river::Le river vient de découvrir la carte " + river + "\n";
 	}
 	
 	/**
 	 * Cette retourne une carte du paquet
 	 * @return
 	 */
-	protected Carte prendreCarte(){
+	public Carte prendreCarte(){
 		return this.cartes.remove(0);
 	}
 	
@@ -229,7 +231,7 @@ public class Table {
 	 * Utile essentiellement à des fins de déboggage
 	 */
 	public String toString(){
-		String s = "\n//////////////////////////Etat de la table///////////////////////////\n";
+		String s = "état::\n//////////////////////////Etat de la table///////////////////////////\n";
 		for(Joueur j : joueurs){
 			s+= j.toString();
 		}
@@ -247,7 +249,7 @@ public class Table {
 	/**
 	 * Cette méthode gère les mises à chaque tour de mises
 	 */
-	protected void mises(boolean isPreflop){
+	public void mises(boolean isPreflop){
 			
 		boolean miseOk = false;
 		currentMise = 0;
@@ -410,7 +412,7 @@ public class Table {
 	/**
 	 * Cette méthode gère la fin d'un tour : attribution du pot au(x) gagnant(s)
 	 */
-	protected void finirTour(){
+	public void finirTour(){
 		for(Joueur j : joueurs){
 			j.setMain(flop, turn, river);
 		}

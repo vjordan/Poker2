@@ -32,7 +32,7 @@ public class Joueur {
 	 */
 	public Joueur(String name){
 		this.name = name;
-		this.nbrJetons = 200;
+		this.nbrJetons = 2000;
 		this.isDealer = false;
 		//this.cartes = new Carte[2];
 	}
